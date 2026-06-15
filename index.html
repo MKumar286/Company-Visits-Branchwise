@@ -54,7 +54,7 @@ filter:blur(100px);
 z-index:-1;
 }
 
-/* UPDATED: PREMIUM SOLID FLOATING RED AND BLUE BACKGROUND MIX ON MAIN HEADING */
+/* PREMIUM SOLID FLOATING RED AND BLUE BACKGROUND MIX ON MAIN HEADING */
 .header-box{
 background: linear-gradient(-45deg, #8b0000, #122244, #a81323, #081630);
 background-size: 300% 300%;
@@ -80,7 +80,7 @@ letter-spacing:0.5px;
 }
 
 h3{
-font-size:13px;
+font-size:14px;
 margin-top:1px;
 font-weight:500;
 background: linear-gradient(90deg, #b2ff59, #00e5ff);
@@ -202,6 +202,39 @@ box-shadow:0 0 8px rgba(0,198,255,0.5);
 border:1px solid #00c6ff;
 }
 
+/* ACTION BAR CONTAINER FOR EXCEL CONTROLLER */
+.action-bar {
+display: flex;
+justify-content: flex-end;
+padding: 4px 8px;
+margin-bottom: 6px;
+background: rgba(0, 8, 20, 0.4);
+border-radius: 8px;
+border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.download-btn {
+background: linear-gradient(135deg, #1f4068, #162447);
+color: white;
+border: 1px solid rgba(255, 255, 255, 0.2);
+padding: 5px 14px;
+font-size: 10px;
+font-weight: bold;
+border-radius: 6px;
+cursor: pointer;
+display: flex;
+align-items: center;
+gap: 6px;
+transition: 0.3s ease;
+box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+.download-btn:hover {
+transform: scale(1.03);
+background: linear-gradient(135deg, #107c41, #1f9a55); /* Elegant Excel Green Theme Accent on Hover */
+box-shadow: 0 4px 15px rgba(16, 124, 65, 0.4);
+}
+
 /* TABLE CONTAINER SETUP */
 .table-container{
 width:100%;
@@ -293,7 +326,7 @@ background:linear-gradient(135deg,#43cea2,#185a9d);
 <body>
 
 <div class="header-box">
-<h1>Department-wise Recruiting Companies</h1>
+<h1>MGIT-Campus Placement Report</h1>
 <h3>Academic Year 2025 - 2026</h3>
 </div>
 
@@ -383,6 +416,12 @@ background:linear-gradient(135deg,#43cea2,#185a9d);
   <select id="mtechFilter"><option value="">M.Tech</option></select>
 </div>
 
+<div class="action-bar">
+  <button class="download-btn" onclick="downloadFilteredExcel()">
+    📊 Download Filtered Data (Excel)
+  </button>
+</div>
+
 <div class="table-container">
 <table id="placementTable">
 <thead></thead>
@@ -391,10 +430,13 @@ background:linear-gradient(135deg,#43cea2,#185a9d);
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 <script>
 const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQLvIzLjDAXJNUBylFC6GM5By6ERH-2I_RncTJ6RD8WQIhftjo_FYV54sWphnPHqu7i5LzPdY_NoUEJ/pub?gid=1580683414&single=true&output=csv";
 
 let allData=[];
+let currentFilteredData=[]; 
 let natureKey = "";
 let totalKey = "";
 let companyNameKey = "";
@@ -432,6 +474,7 @@ Object.keys(deptKeys).forEach(k => {
   deptKeys[k] = headers.find(h => cleanString(h) === lookup) || headers.find(h => cleanString(h).includes(lookup)) || "";
 });
 
+currentFilteredData = [...allData];
 buildTable(allData);
 populateFilters(allData);
 updateLiveMetrics(allData);
@@ -576,7 +619,7 @@ Object.keys(deptKeys).forEach(branch => {
   branchVals[branch] = getVal(branch + "Filter");
 });
 
-let filtered=allData.filter(row=>{
+currentFilteredData=allData.filter(row=>{
 let text=JSON.stringify(row).toLowerCase();
 let rowMatch = (key, val) => val === "" || !key || (row[key] || "").trim() === val;
 
@@ -596,8 +639,28 @@ return text.includes(search)
 && matchesBranches;
 });
 
-buildTable(filtered);
-updateLiveMetrics(filtered);
+buildTable(currentFilteredData);
+updateLiveMetrics(currentFilteredData);
+}
+
+/* NATIVE EXCEL WORKBOOK GENERATOR ENGINE */
+function downloadFilteredExcel() {
+  if (currentFilteredData.length === 0) {
+    alert("No records available to export.");
+    return;
+  }
+  
+  // Create a new blank Excel virtual Workbook pipeline context
+  let wb = XLSX.utils.book_new();
+  
+  // Directly maps JSON layout data stream directly into sheet structured row items
+  let ws = XLSX.utils.json_to_sheet(currentFilteredData);
+  
+  // Append sheet reference to workbook matching project name
+  XLSX.utils.book_append_sheet(wb, ws, "Placement Report Data");
+  
+  // Compile binary buffers and fire download package instantly
+  XLSX.writeFile(wb, "MGIT_Filtered_Placement_Report.xlsx");
 }
 
 /* EVENT BINDINGS */
