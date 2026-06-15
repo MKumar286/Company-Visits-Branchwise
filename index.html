@@ -180,7 +180,7 @@ border-top: 1px solid rgba(255,255,255,0.15);
 overflow-x: hidden;
 }
 
-/* HIGHLY COMPACT SINGLE ROW FILTER LABELS AND DROPDOWNS */
+/* FILTERS DROPDOWNS SETUP */
 .filter-section input,
 .filter-section select{
 flex: 1 1 0px;
@@ -225,7 +225,7 @@ background:rgba(255,255,255,0.05);
 table{
 border-collapse:collapse;
 width:100%;
-table-layout: fixed; /* Retains strict layout discipline */
+table-layout: fixed;
 background:#ffffff;
 color:#222;
 border-radius:12px;
@@ -252,7 +252,7 @@ padding:4px 3px;
 font-size:10px;
 font-weight:500;
 text-align:center;
-white-space: nowrap; /* Rigidly prevents wrapping across rows */
+white-space: nowrap;
 overflow: hidden;
 text-overflow: ellipsis;
 border:1px solid rgba(16,37,66,0.1);
@@ -287,7 +287,6 @@ box-shadow:0 1px 4px rgba(0,0,0,0.2);
 background:linear-gradient(135deg,#43cea2,#185a9d);
 }
 
-/* MOBILE FALLBACK VIEWPORT INTERACTION CONFIG */
 @media(max-width:768px){
 table {
   table-layout: auto;
@@ -406,7 +405,7 @@ let allData=[];
 let natureKey = "";
 let totalKey = "";
 let companyNameKey = "";
-let eligibleBranchesKey = ""; // Automatically holds dynamic reference column match
+let eligibleBranchesKey = "";
 
 let deptKeys = { civ: "", eee: "", mech: "", ece: "", cse: "", it: "", csm: "", csd: "", mct: "", csb: "", mme: "", mtech: "" };
 
@@ -426,17 +425,20 @@ return;
 }
 
 let headers = Object.keys(allData[0]);
-let findKey = (arr, fallback) => headers.find(h => arr.some(term => h.toLowerCase().replace(/[\s\.\-_]/g, "").includes(term))) || fallback;
+
+// Defensive Normalization Utility to match column keys regardless of whitespaces or periods
+let cleanString = (str) => str ? str.toLowerCase().replace(/[\s\.\-_]/g, "").trim() : "";
+let findKey = (arr, fallback) => headers.find(h => arr.some(term => cleanString(h).includes(term))) || fallback;
 
 natureKey = findKey(["natureofthecompany", "naturecompany", "nature"], "");
 totalKey = headers.find(h => h.toLowerCase().trim() === "total") || "";
 companyNameKey = findKey(["companyname", "companyplaced", "company"], "");
 eligibleBranchesKey = findKey(["eligiblebranches", "eligibility", "branches"], "");
 
-let getDeptKey = (token) => headers.find(h => h.toLowerCase().replace(/[\s\.\-_]/g, "") === token.toLowerCase().replace(/[\s\.\-_]/g, "")) || "";
 Object.keys(deptKeys).forEach(k => {
-  let lookup = (k === "mtech") ? "m.tech" : k;
-  deptKeys[k] = getDeptKey(lookup) || headers.find(h => h.toLowerCase().trim() === lookup);
+  let lookup = (k === "mtech") ? "mtech" : k;
+  // Deep search matching for department variants
+  deptKeys[k] = headers.find(h => cleanString(h) === lookup) || headers.find(h => cleanString(h).includes(lookup)) || "";
 });
 
 buildTable(allData);
@@ -459,30 +461,27 @@ thead.innerHTML="";
 tbody.innerHTML="";
 
 if(data.length===0){
-tbody.innerHTML="<tr><td colspan='25' style='padding: 20px; font-weight: bold;'>No Records Found Matching Criteria</td></tr>";
+tbody.innerHTML="<tr><td colspan='25' style='padding: 20px; font-weight: bold; text-align:center; color:#222;'>No Records Found Matching Criteria</td></tr>";
 return;
 }
 
 let headers=Object.keys(data[0]);
 let tr=document.createElement("tr");
 
-// Map structural layout definitions to keep headers aligned completely
-let deptKeyValues = Object.values(deptKeys).map(v => v.toLowerCase().trim());
+// Create clean mapped objects to make the visual column matching bulletproof
+let activeDeptMappedValues = Object.values(deptKeys).filter(Boolean).map(v => v.toLowerCase().trim());
 
 headers.forEach(h=>{
   let th=document.createElement("th");
   th.innerText=h;
-  let normalizedHeader = h.toLowerCase().trim();
+  let normH = h.toLowerCase().trim();
 
-  // 1. Shrink individual department metric column cells down
-  if (deptKeyValues.includes(normalizedHeader)) {
+  if (activeDeptMappedValues.includes(normH)) {
     th.style.width = "3.5%";
   } 
-  // 2. Maximize structural share for text-heavy columns
   else if (h === companyNameKey || h === eligibleBranchesKey) {
     th.style.width = "20%";
   } 
-  // 3. Set a balanced generic default fallback spacing width
   else {
     th.style.width = "8%";
   }
