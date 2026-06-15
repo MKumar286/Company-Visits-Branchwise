@@ -103,29 +103,26 @@ background:linear-gradient(90deg,#b2ff59,#00e5ff);
 .filter-section {
 display:flex;
 flex-wrap:nowrap;
-gap:12px;
-padding:8px 12px;
+gap:4px;
+padding:8px 8px;
 backdrop-filter:blur(10px);
 box-shadow:0 6px 20px rgba(0,0,0,0.25);
 border:1px solid rgba(255,255,255,0.15);
 border-top:none;
-overflow-x:auto;
-overflow-y:hidden;
-scroll-behavior:smooth;
 align-items: center;
+justify-content: space-between;
 }
 
 /* STATS BANNER */
 .stats-banner {
 display: flex;
-flex-wrap: wrap;
+flex-wrap: nowrap;
 align-items: center;
-gap: 5px;
+gap: 4px;
 background: rgba(0, 8, 20, 0.6);
-padding: 10px 12px;
+padding: 10px 8px;
 border: 1px solid rgba(255,255,255,0.15);
 border-bottom: 1px solid rgba(255,255,255,0.1);
-border-radius: 0 0 0 0;
 justify-content: space-between;
 }
 
@@ -133,10 +130,10 @@ justify-content: space-between;
 flex: 1 1 0px; 
 background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
 border: 1px solid rgba(255,255,255,0.15);
-padding: 4px 2px;
+padding: 4px 1px;
 border-radius: 6px;
 text-align: center;
-min-width: 60px;
+min-width: 45px;
 box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
@@ -148,6 +145,8 @@ color: #ffe082;
 font-weight: bold;
 margin-bottom: 1px;
 white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
 }
 
 .stat-card .card-value {
@@ -157,14 +156,14 @@ color: #ffffff;
 }
 
 .stats-divider {
-font-size: 9.5px;
+font-size: 8.5px;
 font-weight: 900;
 color: #b2ff59;
 text-transform: uppercase;
-letter-spacing: 0.5px;
+letter-spacing: 0.2px;
 white-space: nowrap;
 flex: 0 0 auto;
-padding: 0 8px;
+padding: 0 4px;
 border-left: 2px solid rgba(255,255,255,0.2);
 display: flex;
 flex-direction: column;
@@ -179,27 +178,42 @@ background:rgba(255,255,255,0.12);
 border-radius:0 0 14px 14px;
 margin-bottom:6px;
 border-top: 1px solid rgba(255,255,255,0.15);
+overflow-x: hidden;
 }
 
-/* FILTERS ELEMENT STYLES */
+/* HIGHLY COMPACT SINGLE ROW FILTER LABELS AND DROPDOWNS */
 .filter-section input,
 .filter-section select{
-flex:0 0 auto;
-width:170px;
-min-width:170px;
+flex: 1 1 0px;
+width: 7.5%;
+min-width: 65px;
 height:30px;
-padding:4px 8px;
-font-size:12px;
-border-radius:8px;
+padding:4px 3px;
+font-size:10px;
+border-radius:6px;
 border:1px solid rgba(255,255,255,0.2);
 outline:none;
 background:rgba(255,255,255,0.92);
 transition:0.3s;
 color: #222;
+text-overflow: ellipsis;
+}
+
+/* Explicit scaling sizing targets for search bar to gain footprint share cleanly */
+.filter-section input#search {
+flex: 1.8 1 0px;
+min-width: 110px;
+width: 14%;
+}
+
+.filter-section select#natureFilter {
+flex: 1.3 1 0px;
+min-width: 85px;
+width: 10%;
 }
 
 .filter-section label {
-font-size: 11px;
+font-size: 10px;
 font-weight: bold;
 color: #ffe082;
 white-space: nowrap;
@@ -211,20 +225,6 @@ flex: 0 0 auto;
 transform:scale(1.02);
 box-shadow:0 0 10px rgba(255,255,255,0.5);
 border:1px solid #00c6ff;
-}
-
-.filter-section::-webkit-scrollbar{
-height:6px;
-}
-
-.filter-section::-webkit-scrollbar-track{
-background:rgba(255,255,255,0.08);
-border-radius:10px;
-}
-
-.filter-section::-webkit-scrollbar-thumb{
-background:linear-gradient(90deg,#00c6ff,#0072ff);
-border-radius:10px;
 }
 
 /* TABLE CONTAINER */
@@ -334,16 +334,22 @@ h3{
 font-size:15px;
 }
 .filter-section{
-padding:6px 8px;
-gap:8px;
+padding:4px 4px;
+gap:2px;
 }
 .filter-section input,
 .filter-section select{
-width:145px;
-min-width:145px;
-height:28px;
-padding:3px 6px;
-font-size:12px;
+min-width: 42px;
+height:26px;
+padding:2px 1px;
+font-size:8px;
+border-radius: 4px;
+}
+.filter-section input#search {
+min-width: 65px;
+}
+.filter-section select#natureFilter {
+min-width: 55px;
 }
 th{
 font-size:11px;
@@ -357,12 +363,18 @@ table{
 min-width:1400px;
 }
 .stats-banner {
-overflow-x: auto;
-flex-wrap: nowrap;
-justify-content: flex-start;
+gap: 2px;
+padding: 8px 4px;
 }
 .stat-card {
-padding: 6px 12px;
+padding: 4px 1px;
+min-width: 32px;
+}
+.stat-card .card-value {
+font-size: 10px;
+}
+.stat-card .card-label {
+font-size: 7px;
 }
 }
 </style>
@@ -378,11 +390,6 @@ padding: 6px 12px;
   <div class="stat-card">
     <div class="card-label">Total Companies</div>
     <div class="card-value" id="statTotalCompanies">0</div>
-  </div>
-
-  <div class="stat-card">
-    <div class="card-label">Total Offers</div>
-    <div class="card-value" id="statTotalOffers">0</div>
   </div>
   
   <div class="stats-divider">
@@ -444,11 +451,11 @@ padding: 6px 12px;
   <input type="text" id="search" placeholder="Search student / roll / company">
 
   <select id="batchFilter">
-    <option value="">All Batches</option>
+    <option value="">Batch</option>
   </select>
 
   <select id="natureFilter">
-    <option value="">Nature of the Company</option>
+    <option value="">Nature</option>
   </select>
 
   <select id="civFilter"><option value="">CIV</option></select>
@@ -591,10 +598,9 @@ let updateSelect = (id, list, defaultText) => {
   list.forEach(v => el.add(new Option(v,v)));
 };
 
-updateSelect("batchFilter", batches, "All Batches");
-updateSelect("natureFilter", natures, "Nature of the Company");
+updateSelect("batchFilter", batches, "Batch");
+updateSelect("natureFilter", natures, "Nature");
 
-// Dynamically generate individual option lists for each branch dropdown filter
 Object.keys(deptKeys).forEach(branch => {
   let key = deptKeys[branch];
   let opts = getDropdownOpts(key);
@@ -606,17 +612,11 @@ Object.keys(deptKeys).forEach(branch => {
 /* REAL-TIME METRICS COMPILER */
 function updateLiveMetrics(currentFilteredData) {
   let uniqueCompanies = new Set();
-  let totalOffersSum = 0;
   let sums = { civ: 0, eee: 0, mech: 0, ece: 0, cse: 0, it: 0, csm: 0, csd: 0, mct: 0, csb: 0, mme: 0, mtech: 0 };
 
   currentFilteredData.forEach(row => {
     if (companyNameKey && row[companyNameKey]) {
       uniqueCompanies.add(row[companyNameKey].toString().trim().toLowerCase());
-    }
-
-    if (totalKey && row[totalKey]) {
-      let tVal = parseFloat(row[totalKey].toString().trim());
-      if (!isNaN(tVal)) totalOffersSum += tVal;
     }
     
     Object.keys(sums).forEach(branch => {
@@ -632,7 +632,6 @@ function updateLiveMetrics(currentFilteredData) {
 
   let setVal = (id, val) => { let el = document.getElementById(id); if(el) el.innerText = val; };
   setVal("statTotalCompanies", uniqueCompanies.size);
-  setVal("statTotalOffers", totalOffersSum);
   setVal("statCivOffers", sums.civ);
   setVal("statEeeOffers", sums.eee);
   setVal("statMechOffers", sums.mech);
@@ -656,7 +655,6 @@ let search = getVal("search").toLowerCase();
 let batch = getVal("batchFilter");
 let nature = getVal("natureFilter");
 
-// Read values across all individual branch selections
 let branchVals = {};
 Object.keys(deptKeys).forEach(branch => {
   branchVals[branch] = getVal(branch + "Filter");
@@ -666,7 +664,6 @@ let filtered=allData.filter(row=>{
 let text=JSON.stringify(row).toLowerCase();
 let rowMatch = (key, val) => val === "" || !key || (row[key] || "").trim() === val;
 
-// Verify rows accurately match specific custom branch filter criteria selections
 let matchesBranches = true;
 Object.keys(deptKeys).forEach(branch => {
   let targetVal = branchVals[branch];
@@ -692,7 +689,6 @@ document.getElementById("search").addEventListener("input",applyFilters);
 document.getElementById("batchFilter").addEventListener("change",applyFilters);
 document.getElementById("natureFilter").addEventListener("change",applyFilters);
 
-// Attach event tracking logic loops dynamically for branch select controls
 Object.keys(deptKeys).forEach(branch => {
   let el = document.getElementById(branch + "Filter");
   if(el) el.addEventListener("change", applyFilters);
