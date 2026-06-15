@@ -213,19 +213,20 @@ box-shadow:0 0 8px rgba(255,255,255,0.5);
 border:1px solid #00c6ff;
 }
 
-/* TABLE CONTAINER */
+/* TABLE CONTAINER - REMOVED FIXED CLIP LIMITATIONS */
 .table-container{
 width:100%;
-overflow:hidden;
+overflow-x: auto; /* Allows smooth horizontal scrolling if data overflows on small monitors */
 border-radius:12px;
 box-shadow:0 8px 25px rgba(0,0,0,0.35);
 background:rgba(255,255,255,0.05);
 }
 
+/* SET TO AUTO LAYOUT TO HUG CONTENT PURELY WITHOUT WASTING WIDTH FOOTPRINTS */
 table{
 border-collapse:collapse;
 width:100%;
-table-layout: fixed;
+table-layout: auto; /* Browser auto-sizes columns precisely to fit content */
 background:#ffffff;
 color:#222;
 border-radius:12px;
@@ -233,7 +234,7 @@ overflow:hidden;
 }
 
 th{
-padding:4px 2px;
+padding:4px 6px;
 font-size:10px;
 font-weight:bold;
 text-align:center;
@@ -241,20 +242,16 @@ background: linear-gradient(180deg, #111a2e 0%, #090e1a 100%);
 color:#ffffff;
 line-height:1.2;
 border:1px solid rgba(255,255,255,0.15);
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
+white-space: nowrap; /* Prevents text wrap layout drops */
 text-shadow: 0 1px 1px rgba(0,0,0,0.8);
 }
 
 td{
-padding:4px 3px;
+padding:4px 6px;
 font-size:10px;
 font-weight:500;
 text-align:center;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
+white-space: nowrap; /* Forces layout tracking onto single clean rows */
 border:1px solid rgba(16,37,66,0.1);
 }
 
@@ -288,9 +285,6 @@ background:linear-gradient(135deg,#43cea2,#185a9d);
 }
 
 @media(max-width:768px){
-table {
-  table-layout: auto;
-}
 .table-container {
   overflow-x: auto;
 }
@@ -450,7 +444,7 @@ alert("CSV Loading Failed. Check Sheet publishing settings.");
 }
 });
 
-/* TABLE DOM GENERATOR WITH FINELY BALANCED WIDTHS */
+/* TABLE DOM GENERATOR - NOW FULLY DYNAMIC VIA AUTO-LAYOUT HUGGING */
 function buildTable(data){
 let thead=document.querySelector("#placementTable thead");
 let tbody=document.querySelector("#placementTable tbody");
@@ -466,25 +460,9 @@ return;
 let headers=Object.keys(data[0]);
 let tr=document.createElement("tr");
 
-let activeDeptMappedValues = Object.values(deptKeys).filter(Boolean).map(v => v.toLowerCase().trim());
-
 headers.forEach(h=>{
   let th=document.createElement("th");
   th.innerText=h;
-  let normH = h.toLowerCase().trim();
-
-  if (activeDeptMappedValues.includes(normH)) {
-    th.style.width = "3.5%"; // Keeps department columns tightly sized
-  } 
-  else if (h === companyNameKey) {
-    th.style.width = "10%"; // CHANGED: Tightened from 20% to remove padding around names
-  } 
-  else if (h === eligibleBranchesKey) {
-    th.style.width = "20%"; // Retains longer allocation space for multi-branch lists
-  } 
-  else {
-    th.style.width = "8%";
-  }
   tr.appendChild(th);
 });
 thead.appendChild(tr);
@@ -495,6 +473,7 @@ headers.forEach(h=>{
 let td=document.createElement("td");
 let value = row[h] ? row[h].toString().trim() : "";
 
+// Attaches mouse hover tooltip hint to easily see text if clipped
 td.title = value; 
 
 if(value.toLowerCase().startsWith("http")){
