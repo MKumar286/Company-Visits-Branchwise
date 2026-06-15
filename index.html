@@ -180,7 +180,7 @@ border-top: 1px solid rgba(255,255,255,0.15);
 overflow-x: hidden;
 }
 
-/* FILTERS DROPDOWNS SETUP */
+/* COMPACT FILTERS ROW CSS */
 .filter-section input,
 .filter-section select{
 flex: 1 1 0px;
@@ -426,7 +426,6 @@ return;
 
 let headers = Object.keys(allData[0]);
 
-// Defensive Normalization Utility to match column keys regardless of whitespaces or periods
 let cleanString = (str) => str ? str.toLowerCase().replace(/[\s\.\-_]/g, "").trim() : "";
 let findKey = (arr, fallback) => headers.find(h => arr.some(term => cleanString(h).includes(term))) || fallback;
 
@@ -437,7 +436,6 @@ eligibleBranchesKey = findKey(["eligiblebranches", "eligibility", "branches"], "
 
 Object.keys(deptKeys).forEach(k => {
   let lookup = (k === "mtech") ? "mtech" : k;
-  // Deep search matching for department variants
   deptKeys[k] = headers.find(h => cleanString(h) === lookup) || headers.find(h => cleanString(h).includes(lookup)) || "";
 });
 
@@ -452,7 +450,7 @@ alert("CSV Loading Failed. Check Sheet publishing settings.");
 }
 });
 
-/* TABLE DOM GENERATOR WITH STRATIFIED COLUMN ALLOCATIONS */
+/* TABLE DOM GENERATOR WITH FINELY BALANCED WIDTHS */
 function buildTable(data){
 let thead=document.querySelector("#placementTable thead");
 let tbody=document.querySelector("#placementTable tbody");
@@ -468,7 +466,6 @@ return;
 let headers=Object.keys(data[0]);
 let tr=document.createElement("tr");
 
-// Create clean mapped objects to make the visual column matching bulletproof
 let activeDeptMappedValues = Object.values(deptKeys).filter(Boolean).map(v => v.toLowerCase().trim());
 
 headers.forEach(h=>{
@@ -477,10 +474,13 @@ headers.forEach(h=>{
   let normH = h.toLowerCase().trim();
 
   if (activeDeptMappedValues.includes(normH)) {
-    th.style.width = "3.5%";
+    th.style.width = "3.5%"; // Keeps department columns tightly sized
   } 
-  else if (h === companyNameKey || h === eligibleBranchesKey) {
-    th.style.width = "20%";
+  else if (h === companyNameKey) {
+    th.style.width = "10%"; // CHANGED: Tightened from 20% to remove padding around names
+  } 
+  else if (h === eligibleBranchesKey) {
+    th.style.width = "20%"; // Retains longer allocation space for multi-branch lists
   } 
   else {
     th.style.width = "8%";
