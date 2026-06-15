@@ -213,20 +213,19 @@ box-shadow:0 0 8px rgba(255,255,255,0.5);
 border:1px solid #00c6ff;
 }
 
-/* TABLE CONTAINER - STRICT VISIBLE BOUNDARY CONTAINER */
+/* TABLE CONTAINER */
 .table-container{
 width:100%;
-overflow:hidden; /* Prevents ugly bars across layouts completely */
+overflow:hidden;
 border-radius:12px;
 box-shadow:0 8px 25px rgba(0,0,0,0.35);
 background:rgba(255,255,255,0.05);
 }
 
-/* COMPACT FIXED SCREEN LAYER MATRIX */
 table{
 border-collapse:collapse;
 width:100%;
-table-layout: fixed; /* Enforces strict execution of your dynamic column constraints */
+table-layout: fixed; /* Retains strict layout discipline */
 background:#ffffff;
 color:#222;
 border-radius:12px;
@@ -244,18 +243,18 @@ line-height:1.2;
 border:1px solid rgba(255,255,255,0.15);
 white-space: nowrap;
 overflow: hidden;
-text-overflow: ellipsis; /* Safely handles extreme dynamic headers cleanly */
+text-overflow: ellipsis;
 text-shadow: 0 1px 1px rgba(0,0,0,0.8);
 }
 
 td{
-padding:4px 2px;
+padding:4px 3px;
 font-size:10px;
 font-weight:500;
 text-align:center;
-white-space: nowrap; /* Disables text wrap styling completely */
+white-space: nowrap; /* Rigidly prevents wrapping across rows */
 overflow: hidden;
-text-overflow: ellipsis; /* Neatly truncates over-extended sheet data outputs */
+text-overflow: ellipsis;
 border:1px solid rgba(16,37,66,0.1);
 }
 
@@ -288,10 +287,10 @@ box-shadow:0 1px 4px rgba(0,0,0,0.2);
 background:linear-gradient(135deg,#43cea2,#185a9d);
 }
 
-/* MOBILE OPTIMIZATIONS SWITCH OVER */
+/* MOBILE FALLBACK VIEWPORT INTERACTION CONFIG */
 @media(max-width:768px){
 table {
-  table-layout: auto; /* Gracefully allows auto fallback scaling on micro screens */
+  table-layout: auto;
 }
 .table-container {
   overflow-x: auto;
@@ -404,9 +403,10 @@ table {
 const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQLvIzLjDAXJNUBylFC6GM5By6ERH-2I_RncTJ6RD8WQIhftjo_FYV54sWphnPHqu7i5LzPdY_NoUEJ/pub?gid=1580683414&single=true&output=csv";
 
 let allData=[];
-let natureKey="";
-let totalKey="";
-let companyNameKey="";
+let natureKey = "";
+let totalKey = "";
+let companyNameKey = "";
+let eligibleBranchesKey = ""; // Automatically holds dynamic reference column match
 
 let deptKeys = { civ: "", eee: "", mech: "", ece: "", cse: "", it: "", csm: "", csd: "", mct: "", csb: "", mme: "", mtech: "" };
 
@@ -431,6 +431,7 @@ let findKey = (arr, fallback) => headers.find(h => arr.some(term => h.toLowerCas
 natureKey = findKey(["natureofthecompany", "naturecompany", "nature"], "");
 totalKey = headers.find(h => h.toLowerCase().trim() === "total") || "";
 companyNameKey = findKey(["companyname", "companyplaced", "company"], "");
+eligibleBranchesKey = findKey(["eligiblebranches", "eligibility", "branches"], "");
 
 let getDeptKey = (token) => headers.find(h => h.toLowerCase().replace(/[\s\.\-_]/g, "") === token.toLowerCase().replace(/[\s\.\-_]/g, "")) || "";
 Object.keys(deptKeys).forEach(k => {
@@ -449,7 +450,7 @@ alert("CSV Loading Failed. Check Sheet publishing settings.");
 }
 });
 
-/* TABLE DOM INJECTOR GENERATOR WITH CUSTOM WIDTH MATRIX CALCULATOR */
+/* TABLE DOM GENERATOR WITH STRATIFIED COLUMN ALLOCATIONS */
 function buildTable(data){
 let thead=document.querySelector("#placementTable thead");
 let tbody=document.querySelector("#placementTable tbody");
@@ -465,15 +466,27 @@ return;
 let headers=Object.keys(data[0]);
 let tr=document.createElement("tr");
 
-// Loop dynamically reads total column counts to compute precise visible pixel ratios
-let totalCols = headers.length;
-let computedWidth = (100 / totalCols).toFixed(2) + "%";
+// Map structural layout definitions to keep headers aligned completely
+let deptKeyValues = Object.values(deptKeys).map(v => v.toLowerCase().trim());
 
 headers.forEach(h=>{
-let th=document.createElement("th");
-th.innerText=h;
-th.style.width = computedWidth; // Forces symmetrical sizing map allocations across elements
-tr.appendChild(th);
+  let th=document.createElement("th");
+  th.innerText=h;
+  let normalizedHeader = h.toLowerCase().trim();
+
+  // 1. Shrink individual department metric column cells down
+  if (deptKeyValues.includes(normalizedHeader)) {
+    th.style.width = "3.5%";
+  } 
+  // 2. Maximize structural share for text-heavy columns
+  else if (h === companyNameKey || h === eligibleBranchesKey) {
+    th.style.width = "20%";
+  } 
+  // 3. Set a balanced generic default fallback spacing width
+  else {
+    th.style.width = "8%";
+  }
+  tr.appendChild(th);
 });
 thead.appendChild(tr);
 
@@ -483,7 +496,6 @@ headers.forEach(h=>{
 let td=document.createElement("td");
 let value = row[h] ? row[h].toString().trim() : "";
 
-// Attaches hover attribute hints to elegantly let users view full strings if truncated
 td.title = value; 
 
 if(value.toLowerCase().startsWith("http")){
