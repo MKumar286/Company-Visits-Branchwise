@@ -199,7 +199,6 @@ color: #222;
 text-overflow: ellipsis;
 }
 
-/* Explicit scaling sizing targets for search bar to gain footprint share cleanly */
 .filter-section input#search {
 flex: 1.8 1 0px;
 min-width: 110px;
@@ -227,40 +226,21 @@ box-shadow:0 0 10px rgba(255,255,255,0.5);
 border:1px solid #00c6ff;
 }
 
-/* TABLE CONTAINER */
+/* TABLE CONTAINER - REMOVED FIXED OVERFLOW WIDTH ENFORCEMENTS */
 .table-container{
 width:100%;
 overflow-x:auto;
-overflow-y:hidden;
 border-radius:18px;
 box-shadow:0 8px 25px rgba(0,0,0,0.35);
-scroll-behavior:smooth;
 background:rgba(255,255,255,0.05);
-padding-bottom:6px;
+padding-bottom:2px;
 }
 
-.table-container::-webkit-scrollbar{
-height:10px;
-}
-
-.table-container::-webkit-scrollbar-track{
-background:rgba(255,255,255,0.08);
-border-radius:10px;
-}
-
-.table-container::-webkit-scrollbar-thumb{
-background:linear-gradient(90deg,#ff512f,#dd2476);
-border-radius:10px;
-}
-
-.table-container::-webkit-scrollbar-thumb:hover{
-background:linear-gradient(90deg,#00c6ff,#0072ff);
-}
-
+/* UPDATED TO FIT 100% VISIBLE SCREEN SHIELDS */
 table{
 border-collapse:collapse;
-min-width:1600px;
-width:max-content;
+width:100%;
+table-layout: auto;
 background:#ffffff;
 color:#222;
 border-radius:18px;
@@ -268,25 +248,32 @@ overflow:hidden;
 }
 
 th{
-padding:8px 9px;
-font-size:13px;
+padding:6px 4px;
+font-size:11px;
 font-weight:bold;
 text-align:center;
 background: linear-gradient(180deg, #111a2e 0%, #090e1a 100%);
 color:#ffffff;
-line-height:1.3;
+line-height:1.2;
 border:1px solid rgba(255,255,255,0.18);
-white-space:nowrap;
+white-space:normal; /* Allows word wrapping in headings if needed */
 text-shadow: 0 1px 2px rgba(0,0,0,0.8);
 box-shadow: inset 0 -2px 0px rgba(0, 198, 255, 0.4);
 }
 
+/* Strict custom column scaling allocations */
+table th:nth-child(-n+5) {
+  max-width: 80px;
+  width: 6%;
+}
+
 td{
-padding:5px 9px;
-font-size:12px;
+padding:6px 4px;
+font-size:11px;
 font-weight:500;
 text-align:center;
-white-space:nowrap;
+white-space:normal; /* Crucial change: Allows text inside columns to wrap instead of growing table width */
+word-break: break-word;
 border:1px solid rgba(16,37,66,0.12);
 }
 
@@ -306,10 +293,10 @@ transition:0.3s;
 .link-btn{
 background:linear-gradient(135deg,#667eea,#764ba2);
 color:white;
-padding:3px 8px;
-border-radius:6px;
+padding:2px 4px;
+border-radius:4px;
 text-decoration:none;
-font-size:10px;
+font-size:9px;
 font-weight:bold;
 line-height:1.2;
 display:inline-block;
@@ -352,15 +339,12 @@ min-width: 65px;
 min-width: 55px;
 }
 th{
-font-size:11px;
-padding:5px 6px;
+font-size:9px;
+padding:4px 2px;
 }
 td{
-font-size:11px;
-padding:4px 6px;
-}
-table{
-min-width:1400px;
+font-size:9px;
+padding:4px 2px;
 }
 .stats-banner {
 gap: 2px;
@@ -565,10 +549,10 @@ a.target="_blank";
 a.className="link-btn";
 
 if(h.toLowerCase().includes("intern")){
-a.innerText="📄 Internship Letter";
+a.innerText="📄 Internship";
 }
 else if(h.toLowerCase().includes("offer")){
-a.innerText="📄 Offer Letter";
+a.innerText="📄 Offer";
 }
 else{
 a.innerText="📄 View";
